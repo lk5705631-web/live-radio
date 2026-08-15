@@ -2,7 +2,7 @@
 
 PORT_TO_USE="${PORT:-10000}"
 
-# יצירת הגדרות לשרת Icecast הפנימי
+# יצירת הגדרות לשרת Icecast המותאמות לסביבת Docker
 cat << EOF > /tmp/icecast.xml
 
     
@@ -23,14 +23,18 @@ cat << EOF > /tmp/icecast.xml
         /usr/share/icecast2/admin
         
     
+    
+        nobody
+        nogroup
+    
 
 EOF
 
 # הפעלת שרת Icecast ברקע
 icecast2 -c /tmp/icecast.xml &
 
-# המתנה לעליית השרת
-sleep 3
+# המתנה לטעינת השרת
+sleep 5
 
 # לולאת שידור שירים רציפה לשרת המקומי
 while true; do
