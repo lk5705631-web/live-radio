@@ -1,17 +1,17 @@
-FROM alpine:latest
+FROM ubuntu:22.04
 
-# התקנת ffmpeg ו-python3
-RUN apk add --no-cache ffmpeg python3 bash
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    icecast2 \
+    ffmpeg \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# העתקת השירים והקבצים
 COPY . .
 
-# הפעלת שרת דמה ברקע והרצת שידור הרדיו עם -nostdin
-CMD python3 -m http.server ${PORT:-10000} & \
-    while true; do \
-      for f in *.mp3; do \
-        ffmpeg -nostdin -re -i "$f" -c:a libmp3lame -b:a 128k -content_type audio/mpeg -f mp3 "$STREAM_URL"; \
-      done; \
-    done
+RUN chmod +x start.sh
+
+CMD ["/bin/bash", "start.sh"]
