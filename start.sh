@@ -2,10 +2,10 @@
 
 PORT_TO_USE="${PORT:-10000}"
 
-# הרשאות כתיבה לתיקייה הזמנית
+# הרשאות לתיקייה הזמנית
 chmod 777 /tmp
 
-# יצירת הגדרות Icecast פנימי
+# יצירת הגדרות Icecast (ללא changeowner)
 cat << EOF > /tmp/icecast.xml
 
     Render
@@ -29,20 +29,16 @@ cat << EOF > /tmp/icecast.xml
         /usr/share/icecast2/admin
         
     
-    
-        nobody
-        nogroup
-    
 
 EOF
 
-# הפעלת Icecast ברקע
+# הפעלת Icecast
 icecast2 -c /tmp/icecast.xml &
 
-# המתנה לטעינת הפורט
-sleep 4
+# המתנה לעליית השרת
+sleep 3
 
-# לולאת שידור פנימית ל-127.0.0.1
+# לולאת שידור
 while true; do
   for f in *.mp3; do
     if [ -f "$f" ]; then
