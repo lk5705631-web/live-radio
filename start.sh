@@ -2,10 +2,10 @@
 
 PORT_TO_USE="${PORT:-10000}"
 
-# הרשאות לתיקייה הזמנית
+# הרשאות כתיבה לתיקייה הזמנית
 chmod 777 /tmp
 
-# יצירת הגדרות Icecast
+# יצירת הגדרות Icecast פנימי
 cat << EOF > /tmp/icecast.xml
 
     Render
@@ -36,17 +36,21 @@ cat << EOF > /tmp/icecast.xml
 
 EOF
 
-# הפעלת שרת Icecast בלבד ברקע
+# הפעלת Icecast ברקע
 icecast2 -c /tmp/icecast.xml &
 
-# המתנה לעליית השרת
+# המתנה לטעינת הפורט
 sleep 4
 
-# לולאת השידור הרציפה
+# לולאת שידור פנימית ל-127.0.0.1
 while true; do
   for f in *.mp3; do
     if [ -f "$f" ]; then
       echo "Playing: $f"
+      ffmpeg -nostdin -re -i "$f" -c:a libmp3lame -b:a 128k -content_type audio/mpeg -f mp3 "icecast://source:RadioSecret123@127.0.0.1:${PORT_TO_USE}/live"
+    fi
+  done
+done
       ffmpeg -nostdin -re -i "$f" -c:a libmp3lame -b:a 128k -content_type audio/mpeg -f mp3 "icecast://source:RadioSecret123@127.0.0.1:${PORT_TO_USE}/live"
     fi
   done
